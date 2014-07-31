@@ -11,11 +11,13 @@ if (process.env.NODE_DEBUG) {
 
 describe('orc-denorm', function () {
   before(function () {
+    // settings
+    this.api_key = 'programming in your dentist\'s parking lot';
     // items
     this.items = {};
     this.items.user = {
       path: {
-        collection: 'users',
+        collection: 'user',
         key: 'garbados'
       },
       value: {
@@ -25,7 +27,7 @@ describe('orc-denorm', function () {
 
     this.items.other_user = {
       path: {
-        collection: 'users',
+        collection: this.items.user.path.collection,
         key: 'fareytel'
       },
       value: {
@@ -35,7 +37,7 @@ describe('orc-denorm', function () {
 
     this.items.post = {
       path: {
-        collection: 'posts',
+        collection: 'post',
         key: 'lqefhaeopf12pfnq'
       },
       value: {
@@ -46,8 +48,9 @@ describe('orc-denorm', function () {
 
     this.items.comment = {
       path: {
-        collection: 'comments',
-        key: 'kjehafoeiyqp4fjnqaekwz'
+        collection: this.items.post.path.collection,
+        key: 'kjehafoeiyqp4fjnqaekwz',
+        type: 'comments'
       },
       value: {
         post_key: this.items.post.path.key,
@@ -73,54 +76,66 @@ describe('orc-denorm', function () {
   });
 
   it('should automatically denormalize items', function (done) {
+    var self = this;
     // mock test-specific HTTP
     var nock = this.nock
-    .get('/v0/posts')
+    .get('/v0/' + this.items.post.path.collection)
     .reply(200, {
       count: 1,
       results: [this.items.post]
     })
-    .get('/v0/users/' + this.items.user.path.key)
+    .get('/v0/' + this.items.user.path.collection + '/' + this.items.user.path.key)
     .reply(200, this.items.user.value)
-    .put('/v0/denorm_posts/' + this.items.post.path.key)
+    .put('/v0/denorm_' + this.items.post.path.collection + '/' + this.items.post.path.key)
     .reply(201);
 
     orc_denorm
     .start({
-      collection: this.items.user.path.collection,
+      collection: this.items.post.path.collection,
       api_key: this.api_key
     })
-    .on('update', function (res) {
-      assert.equal(res.statusCode, 201);
-      nock.done();
-      done();
+    .on('update', function (item) {
+      orc_denorm.stop();
+      assert.deepEqual(item.user, self.items.user.value);
+    })
+    .on('error', function (err) {
+      done(err);
+    })
+    .on('end', function () {
+      try {
+        nock.done();
+        done();
+      } catch (e) {
+        done(e);
+      }
     });
   });
 
   it('should denormalize items using a custom function', function (done) {
+    var self = this;
     // mock test-specific HTTP
     var nock = this.nock
-    .get('/v0/posts')
+    .get('/v0/' + this.items.post.path.collection)
     .reply(200, {
       count: 1,
       results: [this.items.post]
     })
-    .get('/v0/users/' + this.items.user.path.key)
+    .get('/v0/' + this.items.user.path.collection + '/' + this.items.user.path.key)
     .reply(200, this.items.user.value)
-    .put('/v0/denorm_posts/' + this.items.post.path.key)
+    .put('/v0/denorm_' + this.items.post.path.collection + '/' + this.items.post.path.key)
     .reply(201)
-    .get('/v0/posts/events/comments')
+    .get('/v0/' + this.items.post.path.collection + '/' + this.items.post.path.key + '/events/' + this.items.comment.path.type)
     .reply(200, {
       count: 1,
       results: [this.items.comment]
     })
-    .put('/v0/denorm_posts/' + this.items.post.path.key)
+    .put('/v0/denorm_' + this.items.post.path.collection + '/' + this.items.post.path.key)
     .reply(201);
 
     // custom denorm function
     orc_denorm.denormalize = function (db, path, item) {
       // run the default denorm function
-      this.denormalize(db, path, item)
+      return this._denormalize(db, path, item)
       .then(function (item) {
         // add a post's comments to the post object
         return db.newEventReader()
@@ -128,30 +143,39 @@ describe('orc-denorm', function () {
         .type('comments')
         .list()
         .then(function (res) {
-            item.comments = res.results;
-            return item;
+          item.comments = res.body.results;
+          return item;
         })
         // save the denormalized post
         .then(function (item) {
-            var collection = ['denorm', path.collection].join('_');
-            return db.put(collection, path.key, item);
+          var collection = ['denorm', path.collection].join('_');
+          return db.put(collection, path.key, item);
         })
         .then(function () {
-            return item;
+          return item;
         });
       });
     };
 
     orc_denorm
     .start({
-      collection: this.items.user.path.collection,
+      collection: this.items.post.path.collection,
       api_key: this.api_key
     })
-    .on('update', function (res) {
+    .on('update', function (item) {
       orc_denorm.stop();
-      assert.equal(res.statusCode, 201);
-      nock.done();
-      done();
+      assert.deepEqual(item.comments[0], self.items.comment);
+    })
+    .on('error', function (err) {
+      done(err);
+    })
+    .on('end', function () {
+      try {
+        nock.done();
+        done();
+      } catch (e) {
+        done(e);
+      }
     });
   });
 });
