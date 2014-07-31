@@ -21,8 +21,8 @@ To run orc-denorm with just the default settings, do this:
 This will examine every item in `COLLECTION` for fields named like `[collection]_key`, use their value to find the item they refer to, and create a new document in `denorm_COLLECTION` where those `[collection]_key` fields have been changed to include the whole item they refer to, rather than just its key. So, for example, this document from a `likes` collection:
 
     {
-        user_id: '...',
-        post_id: '...'
+        user_key: '...',
+        post_key: '...'
     }
 
 ... will be turned into this:
@@ -53,7 +53,7 @@ orc_denorm.denormalize = function (db, path, item) {
     // item == { /* the item's value */ }
 
     // let's run the default denormalization function first
-    return this.denormalize(db, path, item)
+    return this._denormalize(db, path, item)
     .then(function (item) {
         // then let's add a post's comments to the post object
         return db.newEventReader()
@@ -76,7 +76,7 @@ orc_denorm.denormalize = function (db, path, item) {
 };
 
 // run orc-denorm's CLI
-orc_denorm.bin();
+orc_denorm.cli();
 // or just start the process with orc_denorm.start({ collection: '...', api_key: '...' })
 ```
 
