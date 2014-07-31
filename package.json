@@ -20,10 +20,12 @@
     "jshint": "^2.5.2",
     "mocha": "^1.21.3",
     "mocha-lcov-reporter": "0.0.1",
-    "nock": "^0.42.3"
+    "nock": "^0.32.0"
   },
   "dependencies": {
+    "async": "^0.9.0",
     "kew": "^0.4.0",
-    "orchestrate": "^0.3.1"
+    "lodash": "^2.4.1",
+    "orchestrate": "^0.3.2"
   }
 }
