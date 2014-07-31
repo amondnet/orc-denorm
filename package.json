@@ -13,5 +13,17 @@
     "mocha": "./node_modules/.bin/mocha test -R spec"
   },
   "author": "Max Thayer <garbados@gmail.com>",
-  "license": "ASLv2"
+  "license": "ASLv2",
+  "devDependencies": {
+    "coveralls": "^2.11.1",
+    "jscoverage": "^0.5.5",
+    "jshint": "^2.5.2",
+    "mocha": "^1.21.3",
+    "mocha-lcov-reporter": "0.0.1",
+    "nock": "^0.42.3"
+  },
+  "dependencies": {
+    "kew": "^0.4.0",
+    "orchestrate": "^0.3.1"
+  }
 }
