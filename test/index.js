@@ -14,12 +14,22 @@ describe('orc-denorm', function () {
     // items
     this.items = {};
     this.items.user = {
-
+      path: {
+        // TODO
+      },
+      value: {
+        // TODO
+      }
     };
 
     this.items.other_user = {
-
-    }
+      path: {
+        // TODO
+      },
+      value: {
+        // TODO
+      }
+    };
 
     this.items.post = {
       path: {
@@ -35,6 +45,10 @@ describe('orc-denorm', function () {
     this.items.comment = {
       path: {
         collection: 'comments',
+        key: 'kjehafoeiyqp4fjnqaekwz'
+      },
+      value: {
+        // TODO
       }
     };
 
