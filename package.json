@@ -1,0 +1,16 @@
+{
+  "name": "orc-denorm",
+  "version": "0.0.0",
+  "description": "Denormalize Orchestrate items in the background.",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run jshint && npm run coverage && npm run mocha",
+    "coveralls": "npm run coverage && ./node_modules/.bin/mocha -R mocha-lcov-reporter | ./node_modules/.bin/coveralls",
+    "cov-html": "npm run coverage && ./node_modules/.bin/mocha -R html-cov > coverage.html",
+    "jshint": "./node_modules/.bin/jshint bin lib test",
+    "coverage": "./node_modules/.bin/jscoverage lib lib-cov",
+    "mocha": "./node_modules/.bin/mocha test -R spec"
+  },
+  "author": "Max Thayer <garbados@gmail.com>",
+  "license": "ASLv2"
+}
