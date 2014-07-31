@@ -15,19 +15,21 @@ describe('orc-denorm', function () {
     this.items = {};
     this.items.user = {
       path: {
-        // TODO
+        collection: 'users',
+        key: 'garbados'
       },
       value: {
-        // TODO
+        name: 'Diana Thayer'
       }
     };
 
     this.items.other_user = {
       path: {
-        // TODO
+        collection: 'users',
+        key: 'fareytel'
       },
       value: {
-        // TODO
+        name: 'Catherine Thayer'
       }
     };
 
@@ -37,7 +39,7 @@ describe('orc-denorm', function () {
         key: 'lqefhaeopf12pfnq'
       },
       value: {
-        user_key: this.item.user.path.key,
+        user_key: this.items.user.path.key,
         text: 'wanna hear the sound of twitter? https://github.com/orchestrate-io/orc-twitter-music'
       }
     };
@@ -48,7 +50,8 @@ describe('orc-denorm', function () {
         key: 'kjehafoeiyqp4fjnqaekwz'
       },
       value: {
-        // TODO
+        post_key: this.items.post.path.key,
+        text: 'lol sounds like classic metroid'
       }
     };
 
@@ -74,7 +77,7 @@ describe('orc-denorm', function () {
     var nock = this.nock
     .get('/v0/posts')
     .reply(200, {
-      count: 1
+      count: 1,
       results: [this.items.post]
     })
     .get('/v0/users/' + this.items.user.path.key)
@@ -99,7 +102,7 @@ describe('orc-denorm', function () {
     var nock = this.nock
     .get('/v0/posts')
     .reply(200, {
-      count: 1
+      count: 1,
       results: [this.items.post]
     })
     .get('/v0/users/' + this.items.user.path.key)
