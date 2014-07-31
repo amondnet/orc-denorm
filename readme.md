@@ -18,7 +18,7 @@ To run orc-denorm with just the default settings, do this:
 
     orc-denorm -u YOUR_API_KEY -c COLLECTION
 
-This will examine every item in `COLLECTION` for fields named like `[collection]_key`, use their value to find the item they refer to, and create a new document in `denorm_COLLECTION` where those `[collection]_key` fields have been changed to include the whole item they refer to, rather than just its key. So, for example, this document from a `like` collection:
+This will examine every item in `COLLECTION` for fields named like `[collection]_key`, use their value to find the item they refer to, and create a new document in `denorm_COLLECTION` where those `[collection]_key` fields have been changed to include the whole item they refer to, rather than just its key. So, for example, this document from a `likes` collection:
 
     {
         user_id: '...',
@@ -36,7 +36,7 @@ This will examine every item in `COLLECTION` for fields named like `[collection]
         }
     }
 
-With the same key as the original, but in the `denorm_like` collection.
+With the same key as the original, but in the `denorm_likes` collection.
 
 ### Customization
 
@@ -52,24 +52,32 @@ orc_denorm.denormalize = function (db, path, item) {
     // path == { collection: '...', key: '...', ref: '...'}
     // item == { /* the item's value */ }
 
-    // let's add a post's comments to the post object
-    return db.newEventReader()
-    .from(path.collection, path.key)
-    .type('comments')
-    .list()
-    .then(function (res) {
-        item.comments = res.results;
-        return item;
-    })
-    // then let's save the denormalized post
+    // let's run the default denormalization function first
+    return this.denormalize(db, path, item)
     .then(function (item) {
-        var collection = ['denorm', path.collection].join('_');
-        return db.put(collection, path.key, item);
+        // then let's add a post's comments to the post object
+        return db.newEventReader()
+        .from(path.collection, path.key)
+        .type('comments')
+        .list()
+        .then(function (res) {
+            item.comments = res.results;
+            return item;
+        })
+        // then let's save the denormalized post
+        .then(function (item) {
+            var collection = ['denorm', path.collection].join('_');
+            return db.put(collection, path.key, item);
+        })
+        .then(function () {
+            return item;
+        });
     });
 };
 
 // run orc-denorm's CLI
 orc_denorm.bin();
+// or just start the process with orc_denorm.start({ collection: '...', api_key: '...' })
 ```
 
 ## Tests
