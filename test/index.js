@@ -82,13 +82,13 @@ describe('orc-denorm', function () {
 
   afterEach(function () {
     // clean http mocks for each test
-    this.nock.cleanAll();
+    nock.cleanAll();
   });
 
   it('should automatically denormalize items', function (done) {
     var self = this;
     // mock test-specific HTTP
-    var nock = this.nock
+    this.nock
     .get('/v0/' + this.items.post.path.collection)
     .reply(200, {
       count: 1,
@@ -113,7 +113,7 @@ describe('orc-denorm', function () {
     })
     .on('end', function () {
       try {
-        nock.done();
+        self.nock.done();
         done();
       } catch (e) {
         done(e);
@@ -124,7 +124,7 @@ describe('orc-denorm', function () {
   it('should denormalize items using a custom function', function (done) {
     var self = this;
     // mock test-specific HTTP
-    var nock = this.nock
+    this.nock
     .get('/v0/' + this.items.post.path.collection)
     .reply(200, {
       count: 1,
@@ -143,7 +143,7 @@ describe('orc-denorm', function () {
     .reply(201);
 
     // custom denorm function
-    orc_denorm.denormalize = function (db, path, item) {
+    this.orc_denorm.denormalize = function (db, path, item) {
       // run the default denorm function
       return this._denormalize(db, path, item)
       .then(function (item) {
@@ -181,7 +181,7 @@ describe('orc-denorm', function () {
     })
     .on('end', function () {
       try {
-        nock.done();
+        self.nock.done();
         done();
       } catch (e) {
         done(e);
@@ -192,7 +192,7 @@ describe('orc-denorm', function () {
   it('should work from the command line', function (done) {
     var self = this;
     // mock test-specific HTTP
-    var nock = this.nock
+    this.nock
     .get('/v0/' + this.items.post.path.collection)
     .reply(200, {
       count: 1,
@@ -217,7 +217,7 @@ describe('orc-denorm', function () {
     })
     .on('end', function () {
       try {
-        nock.done();
+        self.nock.done();
         done();
       } catch (e) {
         done(e);
