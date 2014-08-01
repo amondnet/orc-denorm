@@ -43,7 +43,7 @@ With the same key as the original, but in the `denorm_likes` collection.
 To customize how orc-denorm handles documents, you can write your own script:
 
 ``` javascript
-var orc_denorm = require('orc-denorm');
+var orc_denorm = require('orc-denorm')();
 
 // the custom denormalization function
 // must return a promise
