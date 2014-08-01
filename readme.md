@@ -23,7 +23,7 @@ To run orc-denorm with just the default settings, do this:
 
     orc-denorm -u YOUR_API_KEY -c COLLECTION
 
-This will examine every item in `COLLECTION` for fields named like `[collection]_key`, use their value to find the item they refer to, and create a new document in `denorm_COLLECTION` where those `[collection]_key` fields have been changed to include the whole item they refer to, rather than just its key. So, for example, this document from a `likes` collection:
+This will examine every item in `COLLECTION` for fields named like `[collection]_key`, use their value to find the item they refer to, and create a new document in `denorm_COLLECTION` where those `[collection]_key` fields have been changed to include the whole item they refer to, rather than just its key. So, for example, this document from a `like` collection:
 
     {
         user_key: '...',
@@ -41,7 +41,7 @@ This will examine every item in `COLLECTION` for fields named like `[collection]
         }
     }
 
-With the same key as the original, but in the `denorm_likes` collection.
+With the same key as the original, but in the `denorm_like` collection.
 
 ### Customization
 
