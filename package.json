@@ -23,7 +23,7 @@
     "jshint": "^2.5.2",
     "mocha": "^1.21.3",
     "mocha-lcov-reporter": "0.0.1",
-    "nock": "^0.32.0"
+    "nock": "^0.42.3"
   },
   "dependencies": {
     "async": "^0.9.0",
