@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "description": "Denormalize Orchestrate items in the background.",
   "main": "index.js",
+  "bin": {
+    "orc-denorm": "./bin/index.js"
+  },
   "scripts": {
     "test": "npm run jshint && npm run coverage && npm run mocha",
     "debug": "npm run jshint && NODE_DEBUG=true npm run mocha",
