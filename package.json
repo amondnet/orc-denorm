@@ -1,6 +1,6 @@
 {
   "name": "orc-denorm",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Denormalize Orchestrate items in the background.",
   "main": "index.js",
   "bin": {
