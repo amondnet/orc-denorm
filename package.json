@@ -16,7 +16,7 @@
     "mocha": "./node_modules/.bin/mocha test -R spec"
   },
   "author": "Max Thayer <garbados@gmail.com>",
-  "license": "ASLv2",
+  "license": "Apache-2.0",
   "devDependencies": {
     "coveralls": "^2.11.1",
     "jscoverage": "^0.5.5",
