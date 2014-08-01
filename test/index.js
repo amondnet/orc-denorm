@@ -224,4 +224,57 @@ describe('orc-denorm', function () {
       }
     });
   });
+
+  it('should work with multiple pages of results', function (done) {
+    var self = this;
+    // mock test-specific HTTP
+    this.nock
+    // first page of results
+    .get('/v0/' + this.items.post.path.collection)
+    .reply(200, {
+      count: 1,
+      results: [this.items.post]
+    }, {
+      'Link': '/v0/' + this.items.post.path.collection + '?limit=1&afterKey=' + this.items.post.path.key + '>; rel="next"'
+    })
+    .get('/v0/' + this.items.user.path.collection + '/' + this.items.user.path.key)
+    .reply(200, this.items.user.value)
+    .put('/v0/denorm_' + this.items.post.path.collection + '/' + this.items.post.path.key)
+    .reply(201)
+    .get('/v0/' + this.items.user.path.collection + '/' + this.items.user.path.key)
+    .reply(200, this.items.user.value)
+    .put('/v0/denorm_' + this.items.post.path.collection + '/' + this.items.post.path.key)
+    .reply(201)
+    // second page of results
+    .get('/v0/' + this.items.post.path.collection + '?limit=1&afterKey=' + this.items.post.path.key)
+    .reply(200, {
+      count: 1,
+      results: [this.items.post]
+    });
+
+    var updates = [];
+
+    this.orc_denorm
+    .start({
+      collection: this.items.post.path.collection,
+      api_key: this.api_key
+    })
+    .on('update', function (item) {
+      updates.push(item);
+      if (updates.length > 1) {
+        self.orc_denorm.stop();
+      }
+    })
+    .on('error', function (err) {
+      done(err);
+    })
+    .on('end', function () {
+      try {
+        self.nock.done();
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+  });
 });
