@@ -71,8 +71,18 @@ describe('orc-denorm', function () {
   });
 
   before(function () {
-    // mock HTTP
+    // mock http
     this.nock = nock("https://api.orchestrate.io");
+  });
+
+  beforeEach(function () {
+    // instantiate a separate orc-denorm for each test
+    this.orc_denorm = orc_denorm();
+  });
+
+  afterEach(function () {
+    // clean http mocks for each test
+    this.nock.cleanAll();
   });
 
   it('should automatically denormalize items', function (done) {
@@ -89,13 +99,13 @@ describe('orc-denorm', function () {
     .put('/v0/denorm_' + this.items.post.path.collection + '/' + this.items.post.path.key)
     .reply(201);
 
-    orc_denorm
+    this.orc_denorm
     .start({
       collection: this.items.post.path.collection,
       api_key: this.api_key
     })
     .on('update', function (item) {
-      orc_denorm.stop();
+      self.orc_denorm.stop();
       assert.deepEqual(item.user, self.items.user.value);
     })
     .on('error', function (err) {
@@ -157,14 +167,50 @@ describe('orc-denorm', function () {
       });
     };
 
-    orc_denorm
+    this.orc_denorm
     .start({
       collection: this.items.post.path.collection,
       api_key: this.api_key
     })
     .on('update', function (item) {
-      orc_denorm.stop();
+      self.orc_denorm.stop();
       assert.deepEqual(item.comments[0], self.items.comment);
+    })
+    .on('error', function (err) {
+      done(err);
+    })
+    .on('end', function () {
+      try {
+        nock.done();
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+  });
+
+  it('should work from the command line', function (done) {
+    var self = this;
+    // mock test-specific HTTP
+    var nock = this.nock
+    .get('/v0/' + this.items.post.path.collection)
+    .reply(200, {
+      count: 1,
+      results: [this.items.post]
+    })
+    .get('/v0/' + this.items.user.path.collection + '/' + this.items.user.path.key)
+    .reply(200, this.items.user.value)
+    .put('/v0/denorm_' + this.items.post.path.collection + '/' + this.items.post.path.key)
+    .reply(201);
+
+    this.orc_denorm
+    .cli({
+      collection: this.items.post.path.collection,
+      api_key: this.api_key
+    })
+    .on('update', function (item) {
+      self.orc_denorm.stop();
+      assert.deepEqual(item.user, self.items.user.value);
     })
     .on('error', function (err) {
       done(err);
