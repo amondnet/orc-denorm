@@ -313,4 +313,34 @@ describe('orc-denorm', function () {
       }
     });
   });
+
+  it.skip('500s while getting related objects should not halt scanning', function (done) {
+    // TODO
+  });
+
+  it('404s while retrieving the list should halt orc-denorm gracefully', function (done) {
+    var self = this;
+    // mock test-specific HTTP
+    this.nock
+    .get('/v0/' + this.items.post.path.collection)
+    .reply(404);
+
+    this.orc_denorm
+    .start({
+      collection: this.items.post.path.collection,
+      api_key: this.api_key
+    })
+    .on('error', function (err) {
+      self.orc_denorm.stop();
+      assert.equal(err.statusCode, 404);
+    })
+    .on('end', function () {
+      try {
+        self.nock.done();
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+  });
 });
