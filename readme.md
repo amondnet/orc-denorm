@@ -1,6 +1,6 @@
 # orc-denorm
 
-Denormalize Orchestrate items in the background.
+Denormalize [Orchestrate](http://orchestrate.io/) items in the background.
 
 ## Install
 
@@ -79,6 +79,20 @@ orc_denorm.denormalize = function (db, path, item) {
 orc_denorm.cli();
 // or just start the process with orc_denorm.start({ collection: '...', api_key: '...' })
 ```
+
+## Error Handling
+
+orc-denorm does its best to continue running no matter what error messages it receives from Orchestrate. For example:
+
+* Related object is missing? That field in the denormalized item is now null, while scanning continues.
+* Related object yields some other wacky error? Skip denormalizing that object, while scanning continues.
+* Retrieving collection listing yields some 4xx or 5xx error? Try again!
+
+To make sure orc-denorm really never dies, use [forever](https://github.com/nodejitsu/forever):
+
+    forever orc-denorm -u YOUR_API_KEY -c COLLECTION
+
+This will restart orc-denorm if it ever halts unexpectedly.
 
 ## Tests
 
