@@ -314,16 +314,26 @@ describe('orc-denorm', function () {
     });
   });
 
-  it.skip('500s while getting related objects should not halt scanning', function (done) {
-    // TODO
-  });
-
-  it('404s while retrieving the list should halt orc-denorm gracefully', function (done) {
+  it('500s while getting related objects should not halt scanning', function (done) {
     var self = this;
     // mock test-specific HTTP
     this.nock
     .get('/v0/' + this.items.post.path.collection)
-    .reply(404);
+    .reply(200, {
+      count: 1,
+      results: [this.items.post]
+    })
+    .get('/v0/' + this.items.user.path.collection + '/' + this.items.user.path.key)
+    .reply(500)
+    .get('/v0/' + this.items.post.path.collection)
+    .reply(200, {
+      count: 1,
+      results: [this.items.post]
+    })
+    .get('/v0/' + this.items.user.path.collection + '/' + this.items.user.path.key)
+    .reply(200, this.items.user.value)
+    .put('/v0/denorm_' + this.items.post.path.collection + '/' + this.items.post.path.key)
+    .reply(201);
 
     this.orc_denorm
     .start({
@@ -331,7 +341,48 @@ describe('orc-denorm', function () {
       api_key: this.api_key
     })
     .on('error', function (err) {
+      assert.equal(err.statusCode, 500);
+    })
+    .on('update', function (item) {
       self.orc_denorm.stop();
+      assert.deepEqual(item.value, self.items.post.value);
+    })
+    .on('end', function () {
+      try {
+        self.nock.done();
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+  });
+
+  it('404s while retrieving the list should not halt scanning', function (done) {
+    var self = this;
+    // mock test-specific HTTP
+    this.nock
+    .get('/v0/' + this.items.post.path.collection)
+    .reply(404)
+    .get('/v0/' + this.items.post.path.collection)
+    .reply(200, {
+      count: 1,
+      results: [this.items.post]
+    })
+    .get('/v0/' + this.items.user.path.collection + '/' + this.items.user.path.key)
+    .reply(200, this.items.user.value)
+    .put('/v0/denorm_' + this.items.post.path.collection + '/' + this.items.post.path.key)
+    .reply(201);
+
+    this.orc_denorm
+    .start({
+      collection: this.items.post.path.collection,
+      api_key: this.api_key
+    })
+    .on('update', function (item) {
+      self.orc_denorm.stop();
+      assert.deepEqual(item.value, self.items.post.value);
+    })
+    .on('error', function (err) {
       assert.equal(err.statusCode, 404);
     })
     .on('end', function () {
