@@ -66,7 +66,7 @@ orc_denorm.denormalize = function (db, path, item) {
         .type('comments')
         .list()
         .then(function (res) {
-            item.comments = res.results;
+            item.comments = res.body.results;
             return item;
         })
         // then let's save the denormalized post
