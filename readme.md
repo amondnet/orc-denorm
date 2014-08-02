@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/orchestrate-io/orc-denorm.svg?branch=master)](https://travis-ci.org/orchestrate-io/orc-denorm)
 [![Coverage Status](https://coveralls.io/repos/orchestrate-io/orc-denorm/badge.png?branch=master)](https://coveralls.io/r/orchestrate-io/orc-denorm?branch=master)
+[![Code Climate](https://codeclimate.com/github/orchestrate-io/orc-denorm/badges/gpa.svg)](https://codeclimate.com/github/orchestrate-io/orc-denorm)
 
 [![NPM](https://nodei.co/npm/orc-denorm.png)](https://nodei.co/npm/orc-denorm/)
 
