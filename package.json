@@ -13,11 +13,13 @@
     "cov-html": "npm run coverage && ./node_modules/.bin/mocha -R html-cov > coverage.html",
     "jshint": "./node_modules/.bin/jshint bin lib test",
     "coverage": "./node_modules/.bin/jscoverage lib lib-cov",
-    "mocha": "./node_modules/.bin/mocha test -R spec"
+    "mocha": "./node_modules/.bin/mocha test -R spec",
+    "climate": "npm run coverage && ./node_modules/.bin/mocha -R mocha-lcov-reporter | ./node_modules/.bin/codeclimate"
   },
   "author": "Max Thayer <garbados@gmail.com>",
   "license": "Apache-2.0",
   "devDependencies": {
+    "codeclimate-test-reporter": "0.0.3",
     "coveralls": "^2.11.1",
     "jscoverage": "^0.5.5",
     "jshint": "^2.5.2",
